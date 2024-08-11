@@ -11,7 +11,7 @@ while(loop):
         #print(input_file_name)
 
         #Try and open it
-        file_path = os.path.join(os.path.dirname(__file__), 'Ex1.txt')
+        file_path = os.path.join(os.path.dirname(__file__), input_file_name)
         file = open(file_path, 'r')
 
 
@@ -40,7 +40,8 @@ while(loop):
 
         
     except:
-        print("Invalid file name. Please try again\n")
+        print("Invalid file name.\n")
+        loop = False
 
 
 
