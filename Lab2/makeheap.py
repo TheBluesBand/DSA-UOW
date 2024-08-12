@@ -1,6 +1,6 @@
 def makeheap(array):
     length = len(array)
-    for index in range(n // 2,0, -1):
+    for index in range(length // 2,0, -1):
         siftdown(array, index, length)
 
 def siftdown(array, index, length):
