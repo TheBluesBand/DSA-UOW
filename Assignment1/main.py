@@ -18,6 +18,8 @@ try:
     #Loop through file and add elements to the stack
     with file as f:
         for line in f:
+
+            #Rewrite to not use .strip().lower().split() and iterate through them as char array
             line_temp = line.strip().lower().split()
             temp_string = ""
             for x in line_temp:
