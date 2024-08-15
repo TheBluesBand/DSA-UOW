@@ -1,8 +1,12 @@
 #read in a text file
 import os
 import string
+from functions import StringPoolWithCount
 
 try:
+    #Create string pool
+    string_pool = StringPoolWithCount()
+
     #Get file input through a prompt
     input_file_name = input("Hello! Please input the file you want to read from: ")
     #print(input_file_name)
@@ -21,15 +25,18 @@ try:
 
             #Rewrite to not use .strip().lower().split() and iterate through them as char array
             line_temp = line.strip().lower().split()
+            
             temp_string = ""
             for x in line_temp:
                 for char in x:
                     if char not in string.punctuation:
                         temp_string = temp_string + char
-                words.append(temp_string)
+                #words.append(temp_string)
+                string_pool.addToPool(temp_string)
                 temp_string = ""
 
-    print(words)
+
+    print(string_pool)
 
     #Close the file
     file.close()
