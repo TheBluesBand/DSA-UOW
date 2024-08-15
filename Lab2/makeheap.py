@@ -2,7 +2,6 @@ import math
 
 def MakeHeap(array):
     for i in range (len(array) // 2, -1, -1):
-        #print("siftdown " + i + " " + array[i])
         SiftDown(array, i)
 
     #print(array)
@@ -15,7 +14,6 @@ def SiftDown(array, index):
         return
     
     if (right_child < len(array) and array[left_child] < array[right_child]):
-        #left_child = right_child
         left_child = left_child + 1
 
     if (array[parent] < array[left_child]):
@@ -23,8 +21,6 @@ def SiftDown(array, index):
 
         SiftDown(array, left_child)
 
-
-    #print(array)
 
 
 def print_heap(heap):
