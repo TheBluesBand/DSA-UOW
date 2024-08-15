@@ -1,6 +1,6 @@
 #read in a text file
 import os
-from makeheap import makeheap, siftdown
+from makeheap import MakeHeap, print_heap
 
 try:
     #Get file input through a prompt
@@ -13,7 +13,7 @@ try:
 
 
     #Create my heap
-    heap = [None] * 100
+    heap = [None] * 97
     index = 0
 
     #Loop through file and add elements to the stack
@@ -23,10 +23,20 @@ try:
             index += 1
 
     #Close the file
-    
+    #print(heap)
     file.close()
+    
+    
 
-    makeheap()
+    MakeHeap(heap)
+    #print(heap)
+
+    i = 0
+    while (i < 5):
+        print(heap[i])
+        i = i + 1
+
+    #print_heap(heap)
     
 except:
     print("Invalid file name.\n")

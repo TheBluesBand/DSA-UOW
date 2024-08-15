@@ -1,18 +1,38 @@
-def makeheap(array):
-    length = len(array)
-    for index in range(length // 2,0, -1):
-        siftdown(array, index, length)
+import math
 
-def siftdown(array, index, length):
-    if array[index] is not None:
-        largest = index
-        left = 2 * index
-        right = 2*index + 1
-        if left <= length and array[left] > array[largest]:
-            largest = left
-        if right <= length and array[right] > array[largest]:
-            largest = right
+def MakeHeap(array):
+    for i in range (len(array) // 2, -1, -1):
+        #print("siftdown " + i + " " + array[i])
+        SiftDown(array, i)
 
-        if largest != index:
-            array[index], array[largest] = array[largest], array[index]
-            siftdown(array, largest, length)
+    #print(array)
+
+def SiftDown(array, index):
+    parent = index
+    left_child = 2 * index + 1
+    right_child = 2 * index + 2
+    if (left_child >= len(array)):
+        return
+    
+    if (right_child < len(array) and array[left_child] < array[right_child]):
+        #left_child = right_child
+        left_child = left_child + 1
+
+    if (array[parent] < array[left_child]):
+        array[parent], array[left_child] = array[left_child], array[parent]
+
+        SiftDown(array, left_child)
+
+
+    #print(array)
+
+
+def print_heap(heap):
+    """Prints a heap in a level-order traversal format."""
+    height = int(math.log2(len(heap))) + 1
+    for level in range(height):
+        start_index = 2**level - 1
+        end_index = min(2**(level + 1) - 1, len(heap))
+        level_str = " ".join(str(heap[i]) for i in range(start_index, end_index))
+        print(level_str.center(2**(height + 1) - 1))
+    
