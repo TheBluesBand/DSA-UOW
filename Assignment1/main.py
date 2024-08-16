@@ -1,7 +1,7 @@
 #read in a text file
 import os
 import string
-from functions import StringPoolWithCount, MakeHeap, SiftDown
+from functions import StringPoolWithCount, MakeHeap
 
 #try:
     #Create string pool
@@ -14,7 +14,6 @@ input_file_name = input("Hello! Please input the file you want to read from: ")
 #Try and open it
 file_path = os.path.join(os.path.dirname(__file__), input_file_name)
 file = open(file_path, 'r')
-
 
 #Array to contain all inital words
 words = []
@@ -35,12 +34,14 @@ with file as f:
             string_pool.addToPool(temp_string)
             temp_string = ""
 
-
-#print(string_pool)
-
+print()
 MakeHeap(string_pool)
 
-print(string_pool)
+#print(string_pool)
+i = 1
+while i < 5:
+    print(string_pool[-i])
+    i += 1
 
 #Close the file
 file.close()
