@@ -2,24 +2,36 @@ import math
 
 def MakeHeap(array):
     for i in range (len(array) // 2, -1, -1):
-        SiftDown(array, i)
+        SiftDown(array, len(array), i)
 
-    #print(array)
+    for i in range(len(array) - 1, 0, -1):
+        array[i], array[0] = array[0], array[i]  # swap
+        SiftDown(array, i, 0)
 
-def SiftDown(array, index):
-    parent = index
+    print(array)
+
+def SiftDown(array, len, index):
+    largest = index
     left_child = 2 * index + 1
     right_child = 2 * index + 2
-    if (left_child >= len(array)):
-        return
+
+    if left_child < len and array[left_child] > array[largest]:
+        largest = left_child
+
+    if right_child < len and array[right_child] > array[largest]:
+        largest = right_child
+
+    if largest != index:
+        array[index], array[largest] = array[largest], array[index]
+        SiftDown(array, len, largest)
+
+def HeapSort(array):
+    n = len(array)
     
-    if (right_child < len(array) and array[left_child] < array[right_child]):
-        left_child = left_child + 1
+    for i in range(n - 1, 0, -1):
+        (array[i], array[0]) = (array[0], array[i]) 
 
-    if (array[parent] < array[left_child]):
-        array[parent], array[left_child] = array[left_child], array[parent]
-
-        SiftDown(array, left_child)
+    SiftDown(array, i, 0)
 
 
 
