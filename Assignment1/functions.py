@@ -3,13 +3,13 @@ class StringPoolWithCount:
     def __init__(self):
         self.pool = []
 
-    def addToPool(self, word):
+    def addToPool(self, char_array):
         for i in range(len(self.pool)):
             count, existing_word = self.pool[i]
-            if existing_word == word:
-                self.pool[i] = (count + 1, word)
+            if existing_word == char_array:
+                self.pool[i] = (count + 1, existing_word)
                 return
-        self.pool.append((1, word))
+        self.pool.append((1, char_array))
 
     def modify_tuple(self, index, new_tuple):
         self.pool[index] = new_tuple
@@ -31,7 +31,7 @@ def MakeHeap(array: StringPoolWithCount):
     for i in range (len(array) // 2, -1, -1):
         SiftDown(array,len(array), i)
 
-    #Once we have a maxHeap we then use Heap Sort to sort the area
+    #Once we have a max-heap we then use Heap Sort to sort the area
     HeapSort(array)
 
 
