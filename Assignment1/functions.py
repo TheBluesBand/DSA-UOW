@@ -1,3 +1,4 @@
+#This string pool class is used to keep the count of a word from a txt input
 class StringPoolWithCount:
     def __init__(self):
         self.pool = []
@@ -8,7 +9,6 @@ class StringPoolWithCount:
             if existing_word == word:
                 self.pool[i] = (count + 1, word)
                 return
-
         self.pool.append((1, word))
 
     def modify_tuple(self, index, new_tuple):
@@ -18,13 +18,6 @@ class StringPoolWithCount:
         tuple = self.pool[index]
         return tuple
 
-    def get_count(self, index):
-        print(self.pool[index])
-        return self.pool[index][1]
-    
-    def returnUnderliningArray(self):
-        return self.pool
-
     def __str__(self):
         strings = [str(item) for item in self.pool]
         return "".join(strings)
@@ -33,12 +26,12 @@ class StringPoolWithCount:
         return len(self.pool)
     
 
-
 def MakeHeap(array: StringPoolWithCount):
-    
+    #Use a SiftDown to turn the Heap into a maxHeap
     for i in range (len(array) // 2, -1, -1):
         SiftDown(array,len(array), i)
 
+    #Once we have a maxHeap we then use Heap Sort to sort the area
     HeapSort(array)
 
 
@@ -50,16 +43,19 @@ def SiftDown(array, n, index):
     if (left_child >= n):
         return
 
+    #Check if the left child is bigger than the parent first in count then in alphabetical if the count is the same
     if left_child < n and array.access_tuple(left_child)[0] > array.access_tuple(largest)[0]:
         largest = left_child
     elif left_child < n and array.access_tuple(left_child)[0] == array.access_tuple(largest)[0] and array.access_tuple(left_child)[1] < array.access_tuple(largest)[1]:
         largest = left_child
-
+    
+    #Check if the right child is bigger than the parent first in count then in alphabetical if the count is the same
     if right_child < n and array.access_tuple(right_child)[0] > array.access_tuple(largest)[0]:
         largest = right_child
     elif right_child < n and array.access_tuple(right_child)[0] == array.access_tuple(largest)[0] and array.access_tuple(right_child)[1] < array.access_tuple(largest)[1]:
         largest = right_child
 
+    #If the largest is no longer the index then we must sift down again
     if largest != index:
         temp = array.access_tuple(largest)
         array.modify_tuple(largest, array.access_tuple(index))
@@ -68,8 +64,6 @@ def SiftDown(array, n, index):
 
 def HeapSort(array):
     n = len(array)
-    for i in range (n // 2, -1, -1):
-        SiftDown(array,len(array), i)
 
     for i in range(n - 1, 0, -1):
         #(array[i], array[0]) = (array[0], array[i]) 
