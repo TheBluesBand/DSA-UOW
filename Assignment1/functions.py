@@ -3,7 +3,8 @@ class StringPoolWithCount:
         self.pool = []
 
     def addToPool(self, word):
-        for i, (count, existing_word) in enumerate(self.pool):
+        for i in range(len(self.pool)):
+            count, existing_word = self.pool[i]
             if existing_word == word:
                 self.pool[i] = (count + 1, word)
                 return

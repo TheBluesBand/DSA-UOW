@@ -50,17 +50,15 @@ while i != 0:
     print("The word: " + str(string_pool.access_tuple(i-1)[1]) + " occurs " + str(string_pool.access_tuple(i-1)[0]) + " times.")
     i -= 1
 
-#i= len(string_pool)
-i = 0
+
+i = 1
 print('\nThe unique words sorted alphabetically:')
-while i < len(string_pool):
-    if (string_pool.access_tuple(i)[0] == 1):
-        print("The word: " + str(string_pool.access_tuple(i)[1]) + " occurs " + str(string_pool.access_tuple(i)[0]) + " times.")
+while i < len(string_pool) + 1:
+    if (string_pool.access_tuple(-i)[0] == 1):
+        print("The word: " + str(string_pool.access_tuple(-i)[1]) + " occurs " + str(string_pool.access_tuple(-i)[0]) + " times.")
 
     i += 1
 
-print(string_pool)
-#Close the file
 file.close()
     
 #except:
