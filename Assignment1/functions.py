@@ -24,7 +24,6 @@ class StringPoolWithCount:
     def returnUnderliningArray(self):
         return self.pool
 
-
     def __str__(self):
         strings = [str(item) for item in self.pool]
         return "".join(strings)
@@ -32,6 +31,7 @@ class StringPoolWithCount:
     def __len__(self):
         return len(self.pool)
     
+
 
 def MakeHeap(array: StringPoolWithCount):
     
@@ -51,12 +51,12 @@ def SiftDown(array, n, index):
 
     if left_child < n and array.access_tuple(left_child)[0] > array.access_tuple(largest)[0]:
         largest = left_child
-    elif left_child < n and array.access_tuple(left_child)[0] == array.access_tuple(largest)[0] and array.access_tuple(left_child)[1] > array.access_tuple(largest)[1]:
+    elif left_child < n and array.access_tuple(left_child)[0] == array.access_tuple(largest)[0] and array.access_tuple(left_child)[1] < array.access_tuple(largest)[1]:
         largest = left_child
 
     if right_child < n and array.access_tuple(right_child)[0] > array.access_tuple(largest)[0]:
         largest = right_child
-    elif right_child < n and array.access_tuple(right_child)[0] == array.access_tuple(largest)[0] and array.access_tuple(right_child)[1] > array.access_tuple(largest)[1]:
+    elif right_child < n and array.access_tuple(right_child)[0] == array.access_tuple(largest)[0] and array.access_tuple(right_child)[1] < array.access_tuple(largest)[1]:
         largest = right_child
 
     if largest != index:
