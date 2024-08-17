@@ -28,19 +28,35 @@ with file as f:
         temp_string = ""
         for x in line_temp:
             for char in x:
-                if char not in string.punctuation:
+                if char not in string.punctuation and char.isalpha():
                     temp_string = temp_string + char
             #words.append(temp_string)
             string_pool.addToPool(temp_string)
             temp_string = ""
 
-print()
+#print()
 MakeHeap(string_pool)
 
 #print(string_pool)
 i = 1
-while i < 5:
-    print(string_pool[-i])
+print("The first 10 words sorted alphabetically within frequency:")
+while i < 11:
+    print("The word: " + str(string_pool.access_tuple(-i)[1]) + " occurs " + str(string_pool.access_tuple(-i)[0]) + " times.")
+    i += 1
+
+
+i = 0
+print("\nThe last 10 words sorted alphabetically within frequency:")
+while i < 10:
+    print("The word: " + str(string_pool.access_tuple(i)[1]) + " occurs " + str(string_pool.access_tuple(i)[0]) + " times.")
+    i += 1
+
+
+print('\nThe unique words sorted alphabetically:')
+while i < len(string_pool):
+    if (string_pool.access_tuple(i)[0] == 1):
+        print("The word: " + str(string_pool.access_tuple(i)[1]) + " occurs " + str(string_pool.access_tuple(i)[0]) + " times.")
+
     i += 1
 
 #Close the file

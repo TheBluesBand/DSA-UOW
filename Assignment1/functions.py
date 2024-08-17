@@ -14,15 +14,15 @@ class StringPoolWithCount:
         self.pool[index] = new_tuple
 
     def access_tuple(self, index):
-        #print(self.pool[index])
-        #print(self.pool)
         tuple = self.pool[index]
-
         return tuple
 
     def get_count(self, index):
         print(self.pool[index])
         return self.pool[index][1]
+    
+    def returnUnderliningArray(self):
+        return self.pool
 
 
     def __str__(self):
