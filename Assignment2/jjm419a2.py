@@ -1,5 +1,7 @@
 import sys
 import numpy
+
+#I only use os to get the path of the input file to make sure its correct
 import os
 
 class Tellar:
@@ -12,23 +14,29 @@ class Tellar:
 
     def checkBusy(self):
         print("nah")
+        self.isBusy = False
 
 class Queue:
     def __init__(self):
+        #The basis of the queue will be a list
         self.queue = []
 
     def enqueue(self, item):
+        #Enqueue is adding two lists together using list comprehesion in python
         self.queue = self.queue + [item]
 
     def dequeue(self):
+        #Dequeue uses the list comprehension to remove the first element and save the list
         self.queue = self.queue[1:]
 
     def is_empty(self):
+        #Check if list is empty. Return result
         return len(self.queue) == 0
 
 def tellar_simulation(tellar_count):
     #Set total number of tellars
     tellars = tellar_count
+    print(tellars)
 
     #Read from the text file
     file_path = os.path.join(os.path.dirname(__file__), 'a2-sample.txt')
@@ -48,3 +56,5 @@ def tellar_simulation(tellar_count):
 
 if __name__ == "__main__":
     tellar_simulation(1)
+    tellar_simulation(2)
+    tellar_simulation(4)
