@@ -35,9 +35,18 @@ class Tellar:
         self.startTime = 0.0
         self.duration = 0.0
 
-    def checkBusy(self):
+    def checkBusy(self, currentTime):
         #If tellar is not busy returns true
-        return (not self.isBusy)
+        #print("Start Time: " + str(self.startTime))
+        #print("Duration: " + str(self.duration))
+        #print("Start + Duration: " + str(self.startTime + self.duration))
+        #print("Current time: " + str(currentTime))
+        #print()
+        if ((self.startTime + self.duration) <= currentTime):
+            self.finishService()
+            return True
+        else:
+            return False
 
 
 class Queue:
@@ -53,29 +62,30 @@ class Queue:
         return "P1 Queue: " + ' '.join(self.p1) + "\n" + "P2 Queue: " + ' '.join(self.p2) + "\n" + "P3 Queue: " + ' '.join(self.p3) + "\n"
 
     def enqueue(self, item):
-        item.strip()
-        print(item.strip())
-        #Enqueue is adding two lists together using list comprehesion in python
-        if item[-1] == 1:
-            self.p1 = self.p1 + [item]
-            compareLength = (len(self.p1) + len(self.p2) + len(self.p3))
-            if (self.maxLength < compareLength):
-                self.maxLength = compareLength
-        elif item[-1] == 2:
-            self.p2 = self.p2 + [item]
-            compareLength = (len(self.p1) + len(self.p2) + len(self.p3))
-            if (self.maxLength < compareLength):
-                self.maxLength = compareLength
-        elif item[-1] == 3:
-            self.p3 = self.p3 + [item]
-            compareLength = (len(self.p1) + len(self.p2) + len(self.p3))
-            if (self.maxLength < compareLength):
-                self.maxLength = compareLength
-        else:
-            print("Out of bounds priority " + item[-1])
+        item = item.strip()
+        if len(item) > 0:
+            print("Added " + item + " to queue")
+            #Enqueue is adding two lists together using list comprehesion in python
+            if item[-1] == "1":
+                self.p1 = self.p1 + [item]
+                compareLength = (len(self.p1) + len(self.p2) + len(self.p3))
+                if (self.maxLength < compareLength):
+                    self.maxLength = compareLength
+            elif item[-1] == "2":
+                self.p2 = self.p2 + [item]
+                compareLength = (len(self.p1) + len(self.p2) + len(self.p3))
+                if (self.maxLength < compareLength):
+                    self.maxLength = compareLength
+            elif item[-1] == "3":
+                self.p3 = self.p3 + [item]
+                compareLength = (len(self.p1) + len(self.p2) + len(self.p3))
+                if (self.maxLength < compareLength):
+                    self.maxLength = compareLength
+            else:
+                print("Out of bounds priority " + item[-1])
 
     def dequeue(self):
-        #print(item)
+        print("Dequeued item")
         if len(self.p1) != 0:
             output = self.p1[0]
             self.p1 = self.p1[1:]
@@ -91,66 +101,71 @@ class Queue:
         else:
             print("Dequeue error")
 
-    def maxQueueLength(self):
-        max_length = 0
-
-        if self.p1MaxLength > max_length:
-            max_length = self.p1MaxLength
-        if self.p2MaxLength > max_length:
-            max_length = self.p2MaxLength
-        if self.p3MaxLength > max_length:
-            max_length = self.p3MaxLength
-
-        return max_length
-
     def is_empty(self):
         #Check if list is empty. Return result
-        return len(self.p1) == 0 and len(self.p2) == 0 and len(self.p3) == 0
+        return ((len(self.p1) == 0) and (len(self.p2) == 0) and (len(self.p3) == 0))
 
 def tellar_simulation(tellar_count):
     #Set total number of tellars
     tellars = [Tellar() for _ in range(tellar_count)]
 
     queue = Queue()
+    queue_empty = False
 
     #Read from the text file
     file_path = os.path.join(os.path.dirname(__file__), 'a2-sample.txt')
     file = open(file_path, 'r', encoding="utf-8")
 
     start_time = time.time()
-    
-
     for line in file:
-        allocated = False
         line = line.strip()
+        fileEmpty = False
+        allocated = False
 
-        if line.strip() != "0 0":
-            #Allocate customer to a teller (if teller is idle)
-            for tellar in tellars:
+        if line.strip() == "0 0":
+            fileEmpty = True
 
-                #Check the tellar has completed the task
-                if tellar.duration <= start_time + tellar.startTime:
-                    tellar.finishService()
+        #while(queue_empty != True):
+        #Allocate customer to a teller (if teller is idle)
+        if(fileEmpty == False):
+            allocated = False
+            currentTime = time.time()
+            if (allocated == False):
+                for tellar in tellars: 
+                    #Check the tellar has completed the task
+                    tellar.checkBusy(currentTime)
 
-                #Tellar is not busy and queue is empty
-                if (tellar.checkBusy() == True) and (queue.is_empty()):
-                    tellar.makeBusy(line, start_time)
-                    #allocated = True
-                    #break
+                    #Tellar is not busy and queue is empty
+                    if (tellar.checkBusy(currentTime) == True):
+                        if (queue.is_empty()):
+                            tellar.makeBusy(line, currentTime)
+                            allocated = True
+                            break
+                        else:
+                            tellar.makeBusy(queue.dequeue(), currentTime)
+            
+            if (allocated == False):
+                queue.enqueue(line)
+
 
                 #Tellar is not busy and queue is not empty
-                elif (tellar.checkBusy() == True) and (not queue.is_empty()):
+                #elif (tellar.checkBusy(currentTime) == True) and (not queue.is_empty()):
                     #Add item from queue to tellar
-                    tellar.makeBusy(queue.dequeue(), start_time)
+                #    tellar.makeBusy(queue.dequeue(), currentTime)
 
                     #Add line to queue
-                    queue.enqueue(line, start_time)
+                #    queue.enqueue(line)
 
                 #Tellar is busy
-                elif (tellar.checkBusy() == False):
+                #elif (tellar.checkBusy(currentTime) == False):
                     #Add line to queue
-                    queue.enqueue(line, start_time)
-        
+                #    queue.enqueue(line)
+                #else:
+                #    queueEmpty = True     
+
+
+
+            
         #If everyone is busy then add to the qyeye
 
         #if allocated == False:
@@ -164,6 +179,8 @@ def tellar_simulation(tellar_count):
     end_time = time.time()
 
     total_time = end_time - start_time
+
+    print(queue)
 
     print("Simulation Statistics")
     print("Customers Served by Each Teller")
