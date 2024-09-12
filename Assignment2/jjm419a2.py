@@ -8,7 +8,7 @@ import os
 class Tellar:
     def __init__(self):
         self.isBusy = False
-        self.item = ""
+        #self.item = ""
         self.startTime = 0.0
         self.duration = 0.0
         self.count = 0
@@ -18,16 +18,17 @@ class Tellar:
         print(self.item)
         print(str(self.count))
 
-    def makeBusy(self, customer, currentTime):
-        if len(customer) > 0:
-            self.item = customer
+    def makeBusy(self, currentTime, duration):
+        if duration > 0:
             self.isBusy = True
             self.count += 1
-            numbers = [float(num) for num in self.item.split()]
+            self.startTime = currentTime
+            self.duration = duration
+            #numbers = [float(num) for num in self.item.split()]
 
-            if len(numbers) > 0:
-                self.startTime = currentTime
-                self.duration = numbers[1]
+            #if len(numbers) > 0:
+            #    self.startTime = currentTime
+            #    self.duration = numbers[1]
 
     def finishService(self):
         self.isBusy = False
@@ -42,11 +43,15 @@ class Tellar:
         #print("Start + Duration: " + str(self.startTime + self.duration))
         #print("Current time: " + str(currentTime))
         #print()
-        if ((self.startTime + self.duration) <= currentTime):
+        time_taken = float(self.startTime) + float(self.duration)
+        if (float(time_taken) <= currentTime):
             self.finishService()
             return True
         else:
             return False
+        
+    def serviceEnd(self):
+        return self.startTime + self.duration
 
 
 class Queue:
@@ -61,43 +66,49 @@ class Queue:
     def __str__(self):
         return "P1 Queue: " + ' '.join(self.p1) + "\n" + "P2 Queue: " + ' '.join(self.p2) + "\n" + "P3 Queue: " + ' '.join(self.p3) + "\n"
 
+    def __len__(self):
+        return len(self.p1) + len(self.p2) + len(self.p3)
+
     def enqueue(self, item):
-        item = item.strip()
+        #item = item.strip()
         if len(item) > 0:
-            print("Added " + item + " to queue")
+            #print("Added " + str(item) + " to queue")
             #Enqueue is adding two lists together using list comprehesion in python
-            if item[-1] == "1":
+            if item[2] == 1.0:
                 self.p1 = self.p1 + [item]
                 compareLength = (len(self.p1) + len(self.p2) + len(self.p3))
                 if (self.maxLength < compareLength):
                     self.maxLength = compareLength
-            elif item[-1] == "2":
+            elif item[2] == 2.0:
                 self.p2 = self.p2 + [item]
                 compareLength = (len(self.p1) + len(self.p2) + len(self.p3))
                 if (self.maxLength < compareLength):
                     self.maxLength = compareLength
-            elif item[-1] == "3":
+            elif item[2] == 3.0:
                 self.p3 = self.p3 + [item]
                 compareLength = (len(self.p1) + len(self.p2) + len(self.p3))
                 if (self.maxLength < compareLength):
                     self.maxLength = compareLength
             else:
-                print("Out of bounds priority " + item[-1])
+                print("Out of bounds priority " + str(item[2]))
 
     def dequeue(self):
-        print("Dequeued item")
+        #print("Dequeued item")
         if len(self.p1) != 0:
             output = self.p1[0]
             self.p1 = self.p1[1:]
-            return output
+            print("Dequeue from p1: " + str(len(self.p1)))
+            return output[1]
         elif len(self.p2) != 0:
             output = self.p2[0]
             self.p2 = self.p2[1:]
-            return output
+            print("Dequeue from p2: " + str(len(self.p2)))
+            return output[1]
         elif len(self.p3) != 0:
             output = self.p3[0]
             self.p3 = self.p3[1:]
-            return output
+            print("Dequeue from p3: " + str(len(self.p3)))
+            return output[1]
         else:
             print("Dequeue error")
 
@@ -116,33 +127,43 @@ def tellar_simulation(tellar_count):
     file_path = os.path.join(os.path.dirname(__file__), 'a2-sample.txt')
     file = open(file_path, 'r', encoding="utf-8")
 
-    start_time = time.time()
     for line in file:
         line = line.strip()
         fileEmpty = False
         allocated = False
 
-        if line.strip() == "0 0":
+        print([float(num) for num in line.split()])
+        line = [float(num) for num in line.split()]
+
+        if len(line) == 3:
+            currentTime = line[0]
+            timeNeeded = line[1]
+            priority = line[2]
+        elif len(line) == 2:
             fileEmpty = True
+
+
 
         #while(queue_empty != True):
         #Allocate customer to a teller (if teller is idle)
-        if(fileEmpty == False):
+        #if(fileEmpty == False):
+        if(fileEmpty == False):    
             allocated = False
-            currentTime = time.time()
+
             if (allocated == False):
                 for tellar in tellars: 
                     #Check the tellar has completed the task
-                    tellar.checkBusy(currentTime)
+                    tellar.checkBusy(tellar.serviceEnd())
 
-                    #Tellar is not busy and queue is empty
                     if (tellar.checkBusy(currentTime) == True):
+                        #If queue is empty, allocate tellar to customer
                         if (queue.is_empty()):
-                            tellar.makeBusy(line, currentTime)
+                            tellar.makeBusy(currentTime, timeNeeded)
                             allocated = True
                             break
+                        #If queue is not empty, allocate tellar to dequeued customer and customer to queue
                         else:
-                            tellar.makeBusy(queue.dequeue(), currentTime)
+                            tellar.makeBusy(currentTime, queue.dequeue())
             
             if (allocated == False):
                 queue.enqueue(line)
@@ -161,24 +182,23 @@ def tellar_simulation(tellar_count):
                     #Add line to queue
                 #    queue.enqueue(line)
                 #else:
-                #    queueEmpty = True     
+                #    queueEmpty = True  
 
+    while (not queue.is_empty()):
+        allocated = False
+        #currentTime = time.time()
+        if (allocated == False):
+            for tellar in tellars: 
+                #Check the tellar has completed the task
+                tellar.checkBusy(0)
 
-
-            
-        #If everyone is busy then add to the qyeye
-
-        #if allocated == False:
-            #print(queue)
-        #    queue.enqueue(line)
-
-        #If a tellar becomes free then pull the first person from the queue
-
-        #End simulation when queue becomes empty and the last customer has left
-
-    end_time = time.time()
-
-    total_time = end_time - start_time
+                #Tellar is not busy and queue is empty
+                if (tellar.checkBusy(currentTime) == True):
+                    tellar.makeBusy(queue.dequeue(), 0)
+                    print("Dequeue after closing" + len(queue))
+        
+        if (allocated == False):
+            queue.enqueue(line)
 
     print(queue)
 
@@ -188,7 +208,8 @@ def tellar_simulation(tellar_count):
     for tellar in tellars:
         print("Tellar[" + str(i) + "]: " + str(tellar.count))
         i =+ 1
-    print("Total Time of Simulation: " + str(total_time))
+    
+    #print("Total Time of Simulation: " + str(total_time))
 
 
     print("Maximum Length of the Queue: " + str(queue.maxLength))
