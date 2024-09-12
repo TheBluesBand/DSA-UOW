@@ -1,6 +1,3 @@
-import sys
-import time
-
 #I only use os to get the path of the input file to make sure its correct
 import os
 
@@ -27,6 +24,7 @@ class Tellar:
         self.isBusy = False
         self.startTime = 0.0
         self.duration = 0.0
+        self.busyUntil = 0.0
 
     def checkBusy(self, currentTime):
         time_taken = float(self.startTime) + float(self.duration)
@@ -103,7 +101,7 @@ class Queue:
             return output
         else:
             return None
-            print("Dequeue error " + str(len(self.p1)) + " " + str(len(self.p2)) + " " + str(len(self.p3)))
+            #print("Dequeue error " + str(len(self.p1)) + " " + str(len(self.p2)) + " " + str(len(self.p3)))
 
     def isEmpty(self):
         #Check if list is empty. Return result
@@ -195,6 +193,6 @@ def tellar_simulation(tellar_count):
     
 
 if __name__ == "__main__":
-    tellar_simulation(1)
+    tellar_simulation(4)
     #tellar_simulation(2)
     #tellar_simulation(4)
