@@ -13,25 +13,9 @@ class Teller:
         return "Busy: " + str(self.isBusy) + " " + str(self.count)
 
     def makeBusy(self, currentTime, nextServiceTime):
-        # self.isBusy = True
-        # self.startTime = currentTime
-        # self.duration = duration
-        # self.count += 1
-        # self.busyUntil = currentTime + duration
-
         self.isBusy = True
         self.available_at = currentTime + nextServiceTime
         self.customers_served += 1
-
-        # tellers[teller_index].isBusy = True
-        #         tellers[teller_index].available_at = current_time + next_customer.service_time
-        #         tellers[teller_index].customers_served += 1
-
-    def finishService(self):
-        self.isBusy = False
-        self.startTime = 0.0
-        self.duration = 0.0
-        self.busyUntil = 0.0
 
     def checkBusy(self, currentTime):
         time_taken = float(self.startTime) + float(self.duration)
@@ -40,9 +24,17 @@ class Teller:
             return True
         else:
             return False
+
+    def finishService(self, currentTime):
+        self.isBusy = False
+        self.idle_start = currentTime
         
     def serviceEnd(self):
         return self.startTime + self.duration
+    
+    def updateIdleTime(self, currentTime):
+        if not self.isBusy and self.idle_start < currentTime:
+            self.idle_time += currentTime - self.idle_start
     
 class Customer:
     def __init__(self, arrival_time, service_time, priority):
@@ -96,37 +88,30 @@ class Queue:
         if len(self.p3) != 0:
             output = self.p3[0]
             self.p3 = self.p3[1:]
-            #print("Dequeue from p3: " + str(len(self.p3)))
             return output
         elif len(self.p2) != 0:
             output = self.p2[0]
             self.p2 = self.p2[1:]
-            #print("Dequeue from p2: " + str(len(self.p2)))
             return output
         elif len(self.p1) != 0:
             output = self.p1[0]
             self.p1 = self.p1[1:]
-            #print("Dequeue from p1: " + str(len(self.p1)))
             return output
         else:
             return None
-            #print("Dequeue error " + str(len(self.p1)) + " " + str(len(self.p2)) + " " + str(len(self.p3)))
 
     def isEmpty(self):
         #Check if list is empty. Return result
         return ((len(self.p1) == 0) and (len(self.p2) == 0) and (len(self.p3) == 0))
+    
+def allTellarsIdle(tellers):
+    for teller in tellers:
+        if teller.isBusy:
+            return False
+    return True
 
 def tellar_simulation(tellar_count):
     #Set the all of the intial variables
-    queue = Queue()
-    currentTime = 0.0
-    totalWaitingTime = 0.0
-    totalQueueLength = 0.0 
-    maxQueueLength = 0
-    totalSimulationTime = 0.0
-    timeSteps = 0
-    servedCustomers = []
-    totalCustomers = 0
     customers = []
     customer_count = 0
 
@@ -146,47 +131,37 @@ def tellar_simulation(tellar_count):
         customers.append(Customer(arrival, service, int(priority)))
         customer_count += 1
 
-    customer_queue = Queue()
+    customQueue = Queue()
     tellers = [Teller() for _ in range(tellar_count)]
 
     current_time = 0
     served_customers = 0
     total_wait_time = 0
     total_service_time = 0
-    max_queue_length = 0
-    total_queue_length_time = 0
+    queueTimeTotal = 0
     last_queue_update_time = 0
+    currentCustomer = 0
+    nextTeller = 0
 
-    customer_index = 0
-    next_teller_index = 0
-
-    def all_tellers_idle():
-        return all(not teller.isBusy for teller in tellers)
-
-    while customer_index < customer_count or not customer_queue.isEmpty() or not all_tellers_idle():
+    while currentCustomer < customer_count or not customQueue.isEmpty() or not allTellarsIdle(tellers):
         if current_time > last_queue_update_time:
-            total_queue_length_time += customer_queue.size() * (current_time - last_queue_update_time)
+            queueTimeTotal += customQueue.size() * (current_time - last_queue_update_time)
             last_queue_update_time = current_time 
 
-        while customer_index < customer_count and customers[customer_index].arrival_time <= current_time:
-            customer_queue.enqueue(customers[customer_index])
-            customer_index += 1
+        while currentCustomer < customer_count and customers[currentCustomer].arrival_time <= current_time:
+            customQueue.enqueue(customers[currentCustomer])
+            currentCustomer += 1
 
         for j in range(tellar_count):
             if tellers[j].isBusy and current_time >= tellers[j].available_at:
-                tellers[j].isBusy = False
-                tellers[j].idle_start = current_time 
-
-        if customer_queue.size() > max_queue_length:
-            max_queue_length = customer_queue.size()
+                tellers[j].finishService(current_time)
 
         for t in range(tellar_count):
-            teller_index = (next_teller_index + t) % tellar_count  
-            if not tellers[teller_index].isBusy and not customer_queue.isEmpty():
-                next_customer = customer_queue.dequeue()
+            teller_index = (nextTeller + t) % tellar_count  
+            if not tellers[teller_index].isBusy and not customQueue.isEmpty():
+                next_customer = customQueue.dequeue()
 
-                if not tellers[teller_index].isBusy and tellers[teller_index].idle_start < current_time:
-                    tellers[teller_index].idle_time += current_time - tellers[teller_index].idle_start
+                tellers[teller_index].updateIdleTime(current_time)
 
                 tellers[teller_index].makeBusy(current_time, next_customer.service_time)
 
@@ -198,14 +173,14 @@ def tellar_simulation(tellar_count):
                 total_service_time += next_customer.service_time
                 served_customers += 1
 
-                next_teller_index = (teller_index + 1) % tellar_count 
+                nextTeller = (teller_index + 1) % tellar_count 
                 break
 
         next_event_time = current_time
         event_found = False
 
-        if customer_index < customer_count:
-            next_event_time = customers[customer_index].arrival_time
+        if currentCustomer < customer_count:
+            next_event_time = customers[currentCustomer].arrival_time
             event_found = True
 
         for j in range(tellar_count):
@@ -214,15 +189,13 @@ def tellar_simulation(tellar_count):
                     next_event_time = tellers[j].available_at
                     event_found = True
 
-        if next_event_time > current_time:
-            current_time = next_event_time
-        elif event_found:
+        if next_event_time > current_time or event_found:
             current_time = next_event_time
         else:
             break
 
     if current_time > last_queue_update_time:
-        total_queue_length_time += customer_queue.size() * (current_time - last_queue_update_time)
+        queueTimeTotal += customQueue.size() * (current_time - last_queue_update_time)
 
     print("\nSimulation Statistics")
     print("Customers Served by Each Teller")
@@ -231,8 +204,8 @@ def tellar_simulation(tellar_count):
     print(f"Total Time of Simulation: {current_time:.2f}")
     print(f"Average Service Time per Customer: {total_service_time / served_customers if served_customers else 0:.4f}")
     print(f"Average Waiting Time per Customer: {total_wait_time / served_customers if served_customers else 0:.3f}")
-    print(f"Maximum Length of the Queue: {max_queue_length}")
-    print(f"Average Length of the Queue: {total_queue_length_time / current_time if current_time > 0 else 0:.4f}")
+    print(f"Maximum Length of the Queue: {customQueue.maxLength}")
+    print(f"Average Length of the Queue: {queueTimeTotal / current_time if current_time > 0 else 0:.4f}")
 
     print("Average Idle Rate of Each Teller")
     for j in range(tellar_count):
@@ -240,6 +213,6 @@ def tellar_simulation(tellar_count):
     
 
 if __name__ == "__main__":
-    tellar_simulation(1)
+    tellar_simulation(4)
     #tellar_simulation(2)
     #tellar_simulation(4)
