@@ -130,16 +130,13 @@ class Queue:
 
         if customer.priority == 3.0:
             self.p3 = self.p3 + [customer]
-            if (self.maxLength < compareLength):
-                self.maxLength = compareLength
+            self.checkMaxLength(compareLength)
         elif customer.priority == 2.0:
             self.p2 = self.p2 + [customer]
-            if (self.maxLength < compareLength):
-                self.maxLength = compareLength
+            self.checkMaxLength(compareLength)
         elif customer.priority == 1.0:
             self.p1 = self.p1 + [customer]
-            if (self.maxLength < compareLength):
-                self.maxLength = compareLength
+            self.checkMaxLength(compareLength)
         else:
             print("Out of bounds priority " + str(customer.priority))
 
@@ -163,6 +160,15 @@ class Queue:
             return output
         else:
             return None
+        
+    def checkMaxLength(self, compareLength) -> None:
+        """Adjusts the maximum length of the queue if the current length is greater.
+
+        Args:
+            compareLength (int): The current length of the queue.
+        """
+        if self.maxLength < compareLength:
+            self.maxLength = compareLength
 
     def isEmpty(self) -> bool:
         """Checks if the queue is empty.
@@ -278,22 +284,22 @@ def tellar_simulation(tellar_count, file_name) -> None:
                 break #Breaks the loop if a customer has been assigned
 
         #Find the next event time
-        next_event_time = currentSimTime
-        event_found = False
+        nextEventTime = currentSimTime
+        eventFound = False
 
         if currentCustomer < totalCustomers:
-            next_event_time = customers[currentCustomer].arrivalTime
-            event_found = True
+            nextEventTime = customers[currentCustomer].arrivalTime
+            eventFound = True
 
         for x in range(tellar_count):
             if tellers[x].isBusy:
-                if not event_found or tellers[x].availableAt < next_event_time:
-                    next_event_time = tellers[x].availableAt
-                    event_found = True
+                if not eventFound or tellers[x].availableAt < nextEventTime:
+                    nextEventTime = tellers[x].availableAt
+                    eventFound = True
 
         #Update the simulation time to the next event time
-        if next_event_time > currentSimTime or event_found:
-            currentSimTime = next_event_time
+        if nextEventTime > currentSimTime or eventFound:
+            currentSimTime = nextEventTime
 
     #Final update of the queue time
     if currentSimTime > queueLastUpdate:
@@ -309,7 +315,7 @@ def tellar_simulation(tellar_count, file_name) -> None:
     print(f"Total Time of Simulation: {currentSimTime:.3f}")
     print(f"Average Service Time per Customer: {totalServiceTime / servedCustomersCount if servedCustomersCount else 0:.4f}")
     print(f"Average Waiting Time per Customer: {totalWaitTime / servedCustomersCount if servedCustomersCount else 0:.5f}")
-    print(f"Maximum Length of the Queue: {customQueue.maxLength}")
+    print(f"Maximum Length of the Queue: {customQueue.maxLength + 1}")
     print(f"Average Length of the Queue: {queueTimeTotal / currentSimTime if currentSimTime > 0 else 0:.7f}")
 
     print("Average Idle Rate of Each Teller")
