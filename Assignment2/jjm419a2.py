@@ -164,7 +164,7 @@ class Queue:
         else:
             return None
 
-    def isEmpty(self):
+    def isEmpty(self) -> bool:
         """Checks if the queue is empty.
 
         Returns:
@@ -172,7 +172,7 @@ class Queue:
         """
         return len(self.p1) == 0 and len(self.p2) == 0 and len(self.p3) == 0
     
-def allTellarsIdle(tellers):
+def allTellarsIdle(tellers) -> bool:
     """Checks if all tellers in the given list are idle.
 
     Args:
