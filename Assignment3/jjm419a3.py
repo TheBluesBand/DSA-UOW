@@ -1,4 +1,5 @@
 import os
+import minHeap
 
 class Vertex:
     def __init__(self, label, x, y):
@@ -17,7 +18,6 @@ class Edge:
 
     def __str__ (self):
         return str(self.start) + " " + str(self.end) + " " + str(self.weight)
-
 
 
 
@@ -40,6 +40,8 @@ def shortestDistance(fileInput: str):
     #Remove the first and last line from the list as they are not needed for the rest of the program
     lines = lines[1:-1]
 
+
+
     # Extract vertex information
     vertices = []
     for line in lines[1:nVertices + 1]:
@@ -56,6 +58,16 @@ def shortestDistance(fileInput: str):
         input = Edge(i, j, w)
         edges.append(input)
 
+    for vertex in vertices:
+        if vertex.label == start:
+            start = vertex
+        elif vertex.label == goal:
+            goal = vertex
+
+    if int == type(start) or type(goal) == int:
+        return "The start and goal vertices are not in the graph"
+    
+
     # Find the start and goal vertices
     start_vertex = None
     goal_vertex = None
@@ -66,6 +78,20 @@ def shortestDistance(fileInput: str):
             goal_vertex = vertex
         if start_vertex and goal_vertex:
             break
+
+    MinHeap = minHeap.MinHeap()
+
+    
+    answer = minHeap.dijkstra(vertices, edges, start, goal)
+
+    # Find the shortest path
+    shortest_path = []
+    shortest_path_length = 0
+
+    
+    # Find the longest path
+    longest_path = []
+    longest_path_length = 0
 
 
     
