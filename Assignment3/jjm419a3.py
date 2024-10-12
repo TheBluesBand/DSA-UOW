@@ -102,47 +102,91 @@ def dijkstraAlgorithm(vertices, edges, startVertex, endVertex):
 
 #------------------------------------------------------------
 
+# def find_longest_path(vertices, edges, start_vertex, end_vertex):
+#     """Finds the longest path between two vertices in a graph.
+
+#     Args:
+#         vertices: A list of Vertex objects.
+#         edges: A list of Edge objects.
+#         start_vertex: The starting Vertex object (or its label).
+#         end_vertex: The ending Vertex object (or its label).
+
+#     Returns:
+#         A tuple containing the longest path as a list of vertices and its weight.
+#     """
+
+#     def dfs(current_vertex, current_weight, current_path, visited):
+#         visited.add(current_vertex)
+#         current_path.append(current_vertex)
+
+#         if current_vertex == end_vertex:
+#             if current_weight > max_weight[0]:
+#                 max_weight[0] = current_weight
+#                 longest_path[0] = current_path.copy()
+
+#         neighbors = [edge.end for edge in edges if edge.start == current_vertex.label]
+#         for neighbor in neighbors:
+#             neighbor_vertex = next(v for v in vertices if v.label == neighbor)
+#             if neighbor_vertex not in visited:
+#                 edge = next(e for e in edges if e.start == current_vertex.label and e.end == neighbor)
+#                 dfs(neighbor_vertex, current_weight + edge.weight, current_path, visited)
+
+#         current_path.pop()
+#         visited.remove(current_vertex)
+
+#     max_weight = [float('-inf')]
+#     longest_path = [[]]
+
+#     # Ensure start_vertex and end_vertex are Vertex objects
+#     if isinstance(start_vertex, int):
+#         start_vertex = next(v for v in vertices if v.label == start_vertex)
+#     if isinstance(end_vertex, int):
+#         end_vertex = next(v for v in vertices if v.label == end_vertex)
+
+#     dfs(start_vertex, 0, [], set())
+
+#     if max_weight[0] == float('-inf'):
+#         return None, []
+#     return max_weight[0], longest_path[0]
+
 def find_longest_path(vertices, edges, start_vertex, end_vertex):
-    """Finds the longest path between two vertices in a graph.
+    """Finds the longest path between two vertices in a graph using DFS with memoization.
 
     Args:
         vertices: A list of Vertex objects.
         edges: A list of Edge objects.
-        start_vertex: The starting Vertex object (or its label).
-        end_vertex: The ending Vertex object (or its label).
+        start_vertex: The starting Vertex object.
+        end_vertex: The ending Vertex object.
 
     Returns:
         A tuple containing the longest path as a list of vertices and its weight.
     """
 
-    def dfs(current_vertex, current_weight, current_path, visited):
-        # Ensure current_vertex is a Vertex object (handle missing vertex)
-        if isinstance(current_vertex, int):
-            try:
-                current_vertex = next(v for v in vertices if v.label == current_vertex)
-            except StopIteration:
-                raise ValueError("Vertex with label", current_vertex, "not found in the graph")
-
-        visited.append(current_vertex)
-        current_path.append(current_vertex)
-
+    def dfs(current_vertex, visited, memo):
         if current_vertex == end_vertex:
-            if current_weight > max_weight[0]:
-                max_weight[0] = current_weight
-                longest_path[0] = current_path.copy()
+            return 0, [current_vertex]
 
-        neighbors = [edge.end for edge in edges if edge.start == current_vertex.label]
-        for neighbor in neighbors:
-            if neighbor not in visited:
-                # Find the edge connecting current_vertex and neighbor
-                edge = next(e for e in edges if e.start == current_vertex.label and e.end == neighbor)
-                dfs(neighbor, current_weight + edge.weight, current_path, visited.copy())
+        if current_vertex in memo:
+            return memo[current_vertex]
 
-        current_path.pop()
+        visited.add(current_vertex)
+        max_distance = float('-inf')
+        longest_path = []
+
+        for edge in edges:
+            if edge.start == current_vertex.label:
+                neighbor = next(v for v in vertices if v.label == edge.end)
+                if neighbor not in visited:
+                    distance, path = dfs(neighbor, visited, memo)
+                    distance += edge.weight
+
+                    if distance > max_distance:
+                        max_distance = distance
+                        longest_path = [current_vertex] + path
+
         visited.remove(current_vertex)
-
-    max_weight = [float('-inf')]
-    longest_path = []
+        memo[current_vertex] = (max_distance, longest_path)
+        return memo[current_vertex]
 
     # Ensure start_vertex and end_vertex are Vertex objects
     if isinstance(start_vertex, int):
@@ -150,11 +194,13 @@ def find_longest_path(vertices, edges, start_vertex, end_vertex):
     if isinstance(end_vertex, int):
         end_vertex = next(v for v in vertices if v.label == end_vertex)
 
-    dfs(start_vertex, 0, [], [])
+    memo = {}
+    visited = set()
+    max_distance, longest_path = dfs(start_vertex, visited, memo)
 
-    if max_weight[0] == float('-inf'):
+    if max_distance == float('-inf'):
         return None, []
-    return max_weight[0], longest_path
+    return max_distance, longest_path
 
 #------------------------------------------------------------
 
@@ -185,6 +231,22 @@ class Edge:
     
     def __repr__(self):
         return self.__str__()
+    
+def euclideanDistance(vertex1: Vertex, vertex2: Vertex):
+  """Calculates the Euclidean distance between two Vertex objects.
+
+  Args:
+    vertex1: The first Vertex object.
+    vertex2: The second Vertex object.
+
+  Returns:
+    The Euclidean distance between the two vertices.
+  """
+
+  dx = vertex1.x - vertex2.x
+  dy = vertex1.y - vertex2.y
+  distance = ((dx ** 2) + (dy ** 2)) ** 0.5
+  return round(distance, 4)
     
 
 #------------------------------------------------------------
@@ -233,17 +295,35 @@ def shortestDistance(fileInput: str):
 
 
     # Print the information extracted from the file to the console
-    print("The number of vertices and edges in the graph: " + str(nVertices) + " " + str(nEdges))
-    print("The start and the goal vertices: " + str(start) + " " + str(goal))
-    print("The Euclidean distance between the start and the goal vertices is calculated using their coordinates: " + str(euclideanDistance(start, goal)))
+    print("===============================================================================================================================")
+    print("The number of vertexes in the graph: " + str(nVertices))
+    print("The number of edges in the graph: " + str(nEdges))
+    print("The start vertexes: " + str(start))
+    print("The end vertexes: " + str(goal))
+    print("===============================================================================================================================")
+    print("The Euclidean distance between the start and the goal vertexes: " + str(euclideanDistance(start, goal)))
 
     shortestWeight, shortestPath = dijkstraAlgorithm(vertices, edges, start, goal)
-    print("The vertices on the shortest path, in order from the start to the goal: " + str(shortestPath))
-    print("The length (weight) of the shortest path: " + str(shortestWeight))
+    print("Shortest path: ", end="")
+    for i in range(len(shortestPath)):
+        if i != len(shortestPath) - 1:
+            print(shortestPath[i].label, end=" -> ")
+        else:
+            print(shortestPath[i].label)
+    print("The length (weight) of the shortest path: " + str(int(shortestWeight)))
 
-    # LongestWeight, LongestPath = find_longest_path(vertices, edges, start, goal)
-    # print("The vertices on the longest path, in order from the start to the goal: " + str(LongestPath))
-    # print("The length (weight) of the longest path: " + str(LongestWeight))
+
+    LongestWeight, LongestPath = find_longest_path(vertices, edges, start, goal)
+    print("Longest path: ", end="")
+    for i in range(len(LongestPath)):
+        if i != len(LongestPath) - 1:
+            print(LongestPath[i].label, end=" -> ")
+        else:
+            print(LongestPath[i].label)
+    print("The length of the longest path: " + str(int(LongestWeight)))
+
+    print("===============================================================================================================================")
+    
 
     # Close the file
     file.close()
