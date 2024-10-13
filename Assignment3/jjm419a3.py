@@ -2,8 +2,6 @@
 
 import os
 
-#------------------------------------------------------------
-
 class MinHeap:
     def __init__(self):
         self.heap = []
@@ -59,7 +57,106 @@ class MinHeap:
     
 #------------------------------------------------------------
 
+class Vertex:
+    def __init__(self, label, x, y):
+        """
+        Initializes a Vertex object.
+        Args:
+            label: The label of the vertex (usually an integer or string).
+            x: The x-coordinate of the vertex.
+            y: The y-coordinate of the vertex.
+        """
+        self.label = label
+        self.x = x
+        self.y = y
+        self.distance = float('inf')  # Distance from the source vertex, used in shortest path algorithms
+
+    def __lt__(self, other):
+        """
+        Less-than comparison based on distance.
+        Args:
+            other: Another Vertex object to compare with.
+        Returns:
+            True if this vertex's distance is less than the other vertex's distance.
+        """
+        return self.distance < other.distance
+
+    def __str__(self):
+        """
+        String representation of the vertex.
+        Returns:
+            The label of the vertex as a string.
+        """
+        return str(self.label)
+    
+    def __repr__(self):
+        """
+        Official string representation of the vertex.
+        Returns:
+            The label of the vertex as a string.
+        """
+        return self.__str__()
+
+class Edge:
+    def __init__(self, start, end, weight):
+        """
+        Initializes an Edge object.
+        Args:
+            start: The label of the start vertex.
+            end: The label of the end vertex.
+            weight: The weight of the edge.
+        """
+        self.start = start
+        self.end = end
+        self.weight = weight
+
+    def __str__(self):
+        """
+        String representation of the edge.
+        Returns:
+            A string in the format "start end weight".
+        """
+        return str(self.start) + " " + str(self.end) + " " + str(self.weight)
+    
+    def __repr__(self):
+        """
+        Official string representation of the edge.
+        Returns:
+            A string in the format "start end weight".
+        """
+        return self.__str__()
+    
+def euclideanDistance(vertex1: Vertex, vertex2: Vertex):
+  """Calculates the Euclidean distance between two Vertex objects.
+
+  Args:
+    vertex1: The first Vertex object.
+    vertex2: The second Vertex object.
+
+  Returns:
+    The Euclidean distance between the two vertices.
+  """
+
+  dx = vertex1.x - vertex2.x
+  dy = vertex1.y - vertex2.y
+  distance = ((dx ** 2) + (dy ** 2)) ** 0.5
+  return round(distance, 4)
+    
+
+
 def dijkstraAlgorithm(vertices, edges, startVertex, endVertex):
+    """
+    Finds the shortest path from 'startVertex' to 'endVertex' using Dijkstra's algorithm.
+    Args:
+        vertices: A list of Vertex objects.
+        edges: A list of Edge objects.
+        startVertex: The starting Vertex object.
+        endVertex: The goal Vertex object.
+    Returns:
+        A tuple containing the shortest distance and the path itself as a list of Vertex objects.
+        If no path exists, returns (None, []).
+    """
+
     # Initialize distances and previous nodes
     for vertex in vertices:
         vertex.distance = float('inf')
@@ -101,23 +198,52 @@ def dijkstraAlgorithm(vertices, edges, startVertex, endVertex):
 #------------------------------------------------------------
 
 def dfs_longest_path(vertices, edges, current_vertex, goal_vertex, visited, current_weight, max_weight, path, current_path, path_index, max_path_index):
+    """
+    Performs a depth-first search to find the longest path from 'current_vertex' to 'goal_vertex'.
+    Args:
+        vertices: A list of Vertex objects.
+        edges: A list of Edge objects.
+        current_vertex: The current Vertex object in the DFS traversal.
+        goal_vertex: The goal Vertex object to reach.
+        visited: A dictionary to keep track of visited vertices.
+        current_weight: The current weight of the path being explored.
+        max_weight: A list containing the maximum weight found so far.
+        path: A list to store the longest path found.
+        current_path: A list to store the current path being explored.
+        path_index: The current index in the current_path list.
+        max_path_index: A list containing the index of the longest path found.
+    """
+
+    # Mark the current vertex as visited
     visited[current_vertex.label] = True
+    
+    # Add the current vertex to the current path
     current_path[path_index] = current_vertex
     path_index += 1
 
+    # Check if the current vertex is the goal vertex
     if current_vertex == goal_vertex:
+        # If the current path weight is greater than the maximum weight found so far
         if current_weight > max_weight[0]:
+            # Update the maximum weight
             max_weight[0] = current_weight
+            # Update the maximum path index
             max_path_index[0] = path_index
+            # Copy the current path to the path array
             for i in range(path_index):
                 path[i] = current_path[i]
     else:
+        # Iterate over all edges to find neighbors of the current vertex
         for edge in edges:
             if edge.start == current_vertex.label:
+                # Find the neighbor vertex
                 neighbor = next(v for v in vertices if v.label == edge.end)
+                # If the neighbor has not been visited
                 if not visited[neighbor.label]:
+                    # Recursively call dfs_longest_path for the neighbor
                     dfs_longest_path(vertices, edges, neighbor, goal_vertex, visited, current_weight + edge.weight, max_weight, path, current_path, path_index, max_path_index)
 
+    # Mark the current vertex as unvisited (backtrack)
     visited[current_vertex.label] = False
 
 def find_longest_path(vertices, edges, start, goal):
@@ -150,54 +276,16 @@ def find_longest_path(vertices, edges, start, goal):
 
 #------------------------------------------------------------
 
-class Vertex:
-    def __init__(self, label, x, y):
-        self.label = label
-        self.x = x
-        self.y = y
-        self.distance = float('inf')
+def findDistance(fileInput: str):
+    """
+    Processes the input file to extract vertices and edges, and finds the shortest and longest paths between the start and goal vertices.
+    Args:
+        fileName: The name of the input file containing the graph data.
+    Returns:
+        A string message if the start or goal vertices are not in the graph.
+        Otherwise, prints statistics about the graph and the shortest and longest paths.
+    """
 
-    def __lt__(self, other):
-        return self.distance < other.distance
-
-    def __str__ (self):
-        return str(self.label)
-    
-    def __repr__(self):
-        return self.__str__()
-
-class Edge:
-    def __init__(self, start, end, weight):
-        self.start = start
-        self.end = end
-        self.weight = weight
-
-    def __str__ (self):
-        return str(self.start) + " " + str(self.end) + " " + str(self.weight)
-    
-    def __repr__(self):
-        return self.__str__()
-    
-def euclideanDistance(vertex1: Vertex, vertex2: Vertex):
-  """Calculates the Euclidean distance between two Vertex objects.
-
-  Args:
-    vertex1: The first Vertex object.
-    vertex2: The second Vertex object.
-
-  Returns:
-    The Euclidean distance between the two vertices.
-  """
-
-  dx = vertex1.x - vertex2.x
-  dy = vertex1.y - vertex2.y
-  distance = ((dx ** 2) + (dy ** 2)) ** 0.5
-  return round(distance, 4)
-    
-
-#------------------------------------------------------------
-
-def shortestDistance(fileInput: str):
     # Get the file path of the input file and open it
     filePath = os.path.join(os.path.dirname(__file__), fileInput)
 
@@ -278,5 +366,5 @@ if __name__ == '__main__':
     # Test the function
     #fileName = input("Please enter the name of the input file: ")
     fileName = "a3-sample.txt"
-    shortestDistance(fileName.strip())
+    findDistance(fileName.strip())
     
