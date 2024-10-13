@@ -54,13 +54,24 @@ CSCI203/
 │       └── a3-sample.txt
 ├── Labs/
 │   ├── Lab1/
-│   │   ├── README.md
-│   │   ├── lab1.py
+│   │   ├── Ex1-Guide.pdf
+│   │   ├── Ex1.txt
+│   │   ├── jakeStack.py
+│   │   ├── stack.py
+│   │   └── w2-Ex1.pdf
 │   └── Lab2/
-│       ├── README.md
-│       ├── lab2.py
+│   │   ├── Ex2-Guide.pdf
+│   │   ├── Ex2.txt
+│   │   ├── heap.py
+│   │   ├── makeHeap.py
+│   │   └── w4-Ex2.pdf
+│   └── Lab3/
+│   │   ├── Ex3_lab_.pdf
+│   │   ├── Ex3.txt
+│   │   ├── HashTable.py
+│   │   └── Lab3.py
 ├── README.md
-└── requirements.txt
+└── .gitignore
 ```
 
 - Assignments/: Contains directories for each assignment, with a README, the main Python script, and any input files.
