@@ -41,17 +41,28 @@ The repository is organized as follows:
 CSCI203/
 ├── Assignments/
 │   ├── Assignment1/
+│   │   ├── A1 Spring 2024.pdf
+│   │   ├── functions.py
+│   │   ├── main.py
 │   │   ├── README.md
-│   │   ├── assignment1.py
-│   │   └── input.txt
+│   │   ├── sample_output_screenshot.png
+│   │   ├── sample-long.txt
+│   │   └── sample-short.txt
 │   ├── Assignment2/
-│   │   ├── README.md
-│   │   ├── assignment2.py
-│   │   └── input.txt
+│   │   ├── 1-teller-output-sampel.png
+│   │   ├── 2-teller-output-sampel.png
+│   │   ├── 4-teller-output-sampel.png
+│   │   ├── A2 Spring 2024.pdf
+│   │   ├── a2-sample.txt
+│   │   ├── jjm419a2.py
+│   │   └── README.md
 │   └── Assignment3/
-│       ├── README.md
+│       ├── 7161955-a3.pdf
+│       ├── A3 Spring 2024.pdf
+│       ├── a3-sample.txt
 │       ├── jjm419a3.py
-│       └── a3-sample.txt
+│       ├── README.md
+│       └── sample-output.png
 ├── Labs/
 │   ├── Lab1/
 │   │   ├── Ex1-Guide.pdf
