@@ -11,7 +11,6 @@ Welcome to the repository for my Algorithms and Data Structures course (CSCI203)
 - [Assignments](#assignments)
 - [Labs](#labs)
 - [Running the Code](#running-the-code)
-- [License](#license)
 
 ## Introduction
 
