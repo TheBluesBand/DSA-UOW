@@ -126,9 +126,9 @@ class Edge:
         """
         return self.__str__()
     
-def euclideanDistance(vertex1: Vertex, vertex2: Vertex):
-  """Calculates the Euclidean distance between two Vertex objects.
-
+def euclidean_distance(vertex1: Vertex, vertex2: Vertex):
+  """
+  Calculates the Euclidean distance between two Vertex objects.
   Args:
     vertex1: The first Vertex object.
     vertex2: The second Vertex object.
@@ -144,7 +144,7 @@ def euclideanDistance(vertex1: Vertex, vertex2: Vertex):
     
 
 
-def dijkstraAlgorithm(vertices, edges, startVertex, endVertex):
+def dijkstra_algorithm(vertices, edges, startVertex, endVertex):
     """
     Finds the shortest path from 'startVertex' to 'endVertex' using Dijkstra's algorithm.
     Args:
@@ -335,9 +335,9 @@ def findDistance(fileInput: str):
     print("The start vertexes: " + str(start))
     print("The end vertexes: " + str(goal))
     print("===============================================================================================================================")
-    print("The Euclidean distance between the start and the goal vertexes: " + str(euclideanDistance(start, goal)))
+    print("The Euclidean distance between the start and the goal vertexes: " + str(euclidean_distance(start, goal)))
 
-    shortestWeight, shortestPath = dijkstraAlgorithm(vertices, edges, start, goal)
+    shortestWeight, shortestPath = dijkstra_algorithm(vertices, edges, start, goal)
     print("Shortest path: ", end="")
     for i in range(len(shortestPath)):
         if i != len(shortestPath) - 1:
@@ -364,7 +364,7 @@ def findDistance(fileInput: str):
 
 if __name__ == '__main__':
     # Test the function
-    #fileName = input("Please enter the name of the input file: ")
-    fileName = "a3-sample.txt"
+    fileName = input("Please enter the name of the input file: ")
+    #fileName = "a3-sample.txt"
     findDistance(fileName.strip())
     
